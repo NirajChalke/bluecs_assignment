@@ -24,7 +24,16 @@ class BottomNavBarState extends State<BottomNavBar> with WidgetsBindingObserver 
 
   late List<Widget?> _children;
   
-  String? profilePicture;
+  String profilePicture= 'assets/images/profile.jpg';
+
+  // Navigation items with labels
+  final List<NavigationItem> _navigationItems = [
+    NavigationItem(iconName: 'home', label: 'Home'),
+    NavigationItem(iconName: 'job', label: 'Jobs'),
+    NavigationItem(iconName: 'shop', label: 'Shop'),
+    NavigationItem(iconName: 'messages', label: 'Messages'),
+    NavigationItem(iconName: 'profile', label: 'Profile'),
+  ];
 
   @override
   void initState() {
@@ -102,11 +111,12 @@ class BottomNavBarState extends State<BottomNavBar> with WidgetsBindingObserver 
 
   Widget _buildCustomBottomNavigation() {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final unselectedColor =Colors.white;
+    final unselectedColor = Colors.white;
+    
     return Padding(
       padding: EdgeInsets.only(bottom: dW * 0.01),
       child: Container(
-        height: dH * 0.07,
+        height: dH * 0.085, // Increased height to accommodate labels
         decoration: BoxDecoration(
           color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
           borderRadius: BorderRadius.circular(30),
@@ -122,42 +132,52 @@ class BottomNavBarState extends State<BottomNavBar> with WidgetsBindingObserver 
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildNavItem(0, 'home', isDarkMode, unselectedColor),
-            _buildNavItem(1, 'job', isDarkMode, unselectedColor),
-            _buildNavItem(2, 'shop', isDarkMode, unselectedColor),
-            _buildNavItem(3, 'messages', isDarkMode, unselectedColor),
-            _buildProfileNavItem(4, isDarkMode),
-          ],
+          children: List.generate(_navigationItems.length, (index) {
+            if (index == 4) {
+              return _buildProfileNavItem(index, isDarkMode);
+            }
+            return _buildNavItem(index, _navigationItems[index], isDarkMode, unselectedColor);
+          }),
         ),
       ),
     );
   }
 
   Widget _buildNavItem(
-      int index, String iconName, bool isDarkMode, Color unselectedColor) {
+      int index, NavigationItem navItem, bool isDarkMode, Color unselectedColor) {
     bool isSelected = _currentIndex == index;
 
-    String iconToUse =  iconName;
-    Color iconColor = isSelected
-        ? Color(0xff25BAFF)
-        : unselectedColor;
+    Color iconColor = isSelected ? Color(0xff25BAFF) : unselectedColor;
+    Color textColor = isSelected ? Color(0xff25BAFF) : unselectedColor;
 
     return InkWell(
       onTap: () => onTapped(index),
       child: Container(
         width: dW * 0.15,
-        height: dH * 0.05,
+        height: dH * 0.07,
         decoration: BoxDecoration(
           color: Colors.transparent,
           borderRadius: BorderRadius.circular(20),
         ),
-        child: Center(
-          child: AssetSvgIcon(
-            iconToUse,
-            height: 24,
-            color: iconColor,
-          ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AssetSvgIcon(
+              navItem.iconName,
+              height: 20, // Slightly smaller to make room for text
+              color: iconColor,
+            ),
+            SizedBox(height: 2),
+            Text(
+              navItem.label,
+              style: TextStyle(
+                color: textColor,
+                fontSize: 10,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       ),
     );
@@ -165,35 +185,49 @@ class BottomNavBarState extends State<BottomNavBar> with WidgetsBindingObserver 
 
   Widget _buildProfileNavItem(int index, bool isDarkMode) {
     bool isSelected = _currentIndex == index;
-    double size = 24;
+    double size = 20; // Slightly smaller to make room for text
+    Color textColor = isSelected ? Color(0xff25BAFF) : Colors.white;
 
     return InkWell(
       onTap: () => onTapped(index),
       child: Container(
         width: dW * 0.15,
-        height: dH * 0.05,
+        height: dH * 0.07,
         decoration: BoxDecoration(
           color: Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(10),
         ),
-        child: Center(
-          child: Container(
-            width: size,
-            height: size,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: isSelected
-                  ? Border.all(
-                      color: isDarkMode ? Colors.white : Colors.black,
-                      width: 2,
-                    )
-                  : null,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: size,
+              height: size,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(6), // Rounded corners instead of circle
+                border: isSelected
+                    ? Border.all(
+                        color: Color(0xff25BAFF),
+                        width: 2,
+                      )
+                    : null,
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(6), // Match the container border radius
+                child: _buildProfileImage(size),
+              ),
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(size / 2),
-              child: _buildProfileImage(size),
+            SizedBox(height: 2),
+            Text(
+              _navigationItems[4].label,
+              style: TextStyle(
+                color: textColor,
+                fontSize: 10,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+              ),
+              textAlign: TextAlign.center,
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -203,37 +237,11 @@ class BottomNavBarState extends State<BottomNavBar> with WidgetsBindingObserver 
     const String fallbackUrl = 
         'https://images.unsplash.com/photo-1480455624313-e29b44bbfde1?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bWVuJTIwcHJvZmlsZXxlbnwwfHwwfHx8MA%3D%3D';
 
-    if (!_isInitialized) {
-      return Container(
-        color: Theme.of(context).colorScheme.secondary,
-        child: Icon(
-          Icons.person,
-          size: size * 0.7,
-          color: Theme.of(context).scaffoldBackgroundColor,
-        ),
-      );
-    }
 
-    return Image.network(
-      profilePicture ?? fallbackUrl,
+    return Image.asset(
+      profilePicture,
       fit: BoxFit.cover,
-      loadingBuilder: (context, child, loadingProgress) {
-        if (loadingProgress == null) return child;
-        return Container(
-          color: Theme.of(context).colorScheme.secondary,
-          child: const CircularProgressIndicator(strokeWidth: 2),
-        );
-      },
-      errorBuilder: (context, error, stackTrace) {
-        return Container(
-          color: Theme.of(context).colorScheme.secondary,
-          child: Icon(
-            Icons.person,
-            size: size * 0.7,
-            color: Theme.of(context).scaffoldBackgroundColor,
-          ),
-        );
-      },
+
     );
   }
 
@@ -258,4 +266,12 @@ class BottomNavBarState extends State<BottomNavBar> with WidgetsBindingObserver 
           _currentIndex != 2 ? _buildCustomBottomNavigation() : null,
     );
   }
+}
+
+// Helper class to organize navigation items
+class NavigationItem {
+  final String iconName;
+  final String label;
+
+  NavigationItem({required this.iconName, required this.label});
 }
