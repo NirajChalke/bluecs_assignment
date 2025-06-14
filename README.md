@@ -1,16 +1,42 @@
-# bluecs_assignment
+# Flutter UI Assignment
 
-A new Flutter project.
+A clean, modular, and responsive Flutter UI built as part of an assignment. The project follows clean architecture principles and uses the Provider package for efficient state management.
 
-## Getting Started
+## 🚀 Features
 
-This project is a starting point for a Flutter application.
+- ✨ Clean and scalable architecture
+- 🧼 Well-structured and maintainable codebase
+- 📱 Responsive UI across different screen sizes
+- 🪄 Provider for state management
+- 🌗 Optional support for dark/light themes
 
-A few resources to get you started if this is your first Flutter project:
+## 📁 Project Structure
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+lib/
+├── core/ # Constants, theme, utilities
+├── models/ # Data models
+├── providers/ # State management logic
+├── screens/ # Individual screen UIs
+├── services/ # API/local services (if used)
+├── widgets/ # Reusable UI components
+└── main.dart # Entry point
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+bash
+Copy
+Edit
+
+## 🧪 Getting Started
+
+### Prerequisites
+
+- Flutter SDK
+- Dart
+- Android Studio / VS Code
+
+### Steps
+
+```bash
+git clone https://github.com/yourusername/flutter-ui-assignment.git
+cd flutter-ui-assignment
+flutter pub get
+flutter run
